@@ -6,17 +6,17 @@ Dr.ai is a project that uses OpenAI's GPT-3 model to create an AI assistant.
 
 1. Clone the repository:
     ```
-    git clone https://github.com/yourusername/yourrepository.git
+    git clone https://github.com/tannicflux/DR.ai.git
     ```
 
 2. Navigate to the project directory:
     ```
-    cd yourrepository
+    cd DR.ai
     ```
 
 3. Install the required dependencies:
     ```
-    pip install -r requirements.txt
+    pip install streamlit
     ```
 
 4. Add your OpenAI API key and Assistant ID to the `app.py` file:
