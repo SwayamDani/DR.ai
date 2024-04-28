@@ -185,7 +185,7 @@ def main():
 
         .stMarkdown p {
             font-family: "Poppins";
-            font-size: 2.5em;
+            font-size: 1em;
             color: #FFFFFF;
         }
 
