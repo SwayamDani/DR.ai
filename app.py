@@ -275,10 +275,10 @@ def main():
             # Set user_msg to the prompt when the button is clicked
             user_msg = prompt
             break
-        else:
-            user_msg = st.chat_input(
-                "Message", on_submit=disable_form, disabled=st.session_state.in_progress
-            )    
+    else:
+        user_msg = st.chat_input(
+            "Message", on_submit=disable_form, disabled=st.session_state.in_progress
+        )    
     
     if user_msg:
         render_chat()
