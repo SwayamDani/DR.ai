@@ -225,7 +225,7 @@ def main():
     
 
     st.sidebar.markdown("""
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <h4>Made with ❤️ by Swayam Dani</h4>
     <h4>Connect with me:</h4>
     <table style="width:100%; border: 0;">
