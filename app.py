@@ -272,17 +272,17 @@ def main():
     if user_msg:
         render_chat()
         with st.chat_message("user"):
-            st.markdown(user_msg, True)
-        st.session_state.chat_log.append({"name": "user", "msg": user_msg})
-        with st.spinner("Wait for response..."):
-            response = get_response(user_msg)
-        with st.chat_message("Assistant"):
-            st.markdown(response, True)
+            st.markdown("Clone Repository and add you API_KEY, ASSISTANT_ID. Also uncomment the code lines in main", True)
+        #st.session_state.chat_log.append({"name": "user", "msg": user_msg})
+        #with st.spinner("Wait for response..."):
+        #    response = get_response(user_msg)
+        #with st.chat_message("Assistant"):
+        #    st.markdown(response, True)
 
-        st.session_state.chat_log.append({"name": "assistant", "msg": response})
-        st.session_state.in_progress = False
-        st.session_state.tool_call = None
-        st.rerun()
+        #st.session_state.chat_log.append({"name": "assistant", "msg": response})
+        #st.session_state.in_progress = False
+        #st.session_state.tool_call = None
+        #st.rerun()
 
     render_chat()
 
