@@ -156,6 +156,14 @@ css = """
             filter: progid:DXImageTransform.Microsoft.Glow(strength=5, Color=#ffffff);
         }
 
+        .stMarkdown h2 {
+            font-family: "Poppins";
+            font-size: 3em;
+            color: #FFFFFF;
+            text-align: center;
+            padding-bottom: 0;
+        }
+
         .stMarkdown h3 {
             font-family: "Poppins";
             font-size: 1.5em;
@@ -272,7 +280,8 @@ def main():
     if user_msg:
         render_chat()
         with st.chat_message("user"):
-            st.markdown("Clone Repository and add you API_KEY, ASSISTANT_ID. Also uncomment the code lines in main", True)
+            st.markdown("""<h2>Clone Repository and add you API_KEY, ASSISTANT_ID. Also uncomment the code lines in main<h2>""", True, )
+            #st.markdown(user_msg, True)
         #st.session_state.chat_log.append({"name": "user", "msg": user_msg})
         #with st.spinner("Wait for response..."):
         #    response = get_response(user_msg)
