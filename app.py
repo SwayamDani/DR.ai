@@ -259,27 +259,11 @@ def main():
         </tr>
     </table>
     """, unsafe_allow_html=True)
-    #st.markdown(f"# [{assistant_title}](https://tannicflux.github.io)", unsafe_allow_html=True)
 
-    prompts = {
-    "How do I loose weight?",
-    "I have a severe headache",
-    "I cant sleep"
-    }
-
-    # Create columns for each prompt
-    columns = st.columns([2, 5, 4, 5, 4, 5])
-
-    # Create buttons in each column
-    for i, prompt in enumerate(prompts):
-        if columns[i*2+1].button(prompt):
-            # Set user_msg to the prompt when the button is clicked
-            user_msg = prompt
-            break
-    else:
-        user_msg = st.chat_input(
-            "Message", on_submit=disable_form, disabled=st.session_state.in_progress
-        )    
+    user_msg = st.chat_input(
+        "Message", on_submit=disable_form, disabled=st.session_state.in_progress
+    )
+    
     if user_msg:
         render_chat()
         with st.chat_message("user"):
