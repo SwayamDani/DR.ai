@@ -220,6 +220,9 @@ st.markdown(css, unsafe_allow_html=True)
 def main():
     st.title("Dr.ai")
 
+    with st.chat_message("Assistant"):
+            st.markdown("What health concern can I help you with", True)
+
     
     if st.sidebar.button('Start new chat'):
          if "thread" in st.session_state:
@@ -260,8 +263,8 @@ def main():
 
     prompts = {
     "How do I loose weight?",
-    "Write a creative story",
-    "Translate a sentence"
+    "I have a severe headache",
+    "I cant sleep"
     }
 
     # Create columns for each prompt
