@@ -260,9 +260,25 @@ def main():
     </table>
     """, unsafe_allow_html=True)
 
-    user_msg = st.chat_input(
-        "Message", on_submit=disable_form, disabled=st.session_state.in_progress
-    )
+    prompts = {
+    "How do I loose weight?",
+    "I have a severe headache",
+    "I cant sleep"
+    }
+
+    # Create columns for each prompt
+    columns = st.columns([2, 5, 4, 5, 4, 5])
+
+    # Create buttons in each column
+    for i, prompt in enumerate(prompts):
+        if columns[i*2+1].button(prompt):
+            # Set user_msg to the prompt when the button is clicked
+            user_msg = prompt
+            break
+        else:
+            user_msg = st.chat_input(
+                "Message", on_submit=disable_form, disabled=st.session_state.in_progress
+            )    
     
     if user_msg:
         render_chat()
@@ -274,10 +290,10 @@ def main():
         with st.chat_message("Assistant"):
             st.markdown(response, True)
 
-        #st.session_state.chat_log.append({"name": "assistant", "msg": response})
-        #st.session_state.in_progress = False
-        #st.session_state.tool_call = None
-        #st.rerun()
+        st.session_state.chat_log.append({"name": "assistant", "msg": response})
+        st.session_state.in_progress = False
+        st.session_state.tool_call = None
+        st.rerun()
 
     render_chat()
 
