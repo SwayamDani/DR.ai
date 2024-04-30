@@ -6,10 +6,10 @@ import openai
 from tools import TOOL_MAP
 
 st.set_page_config(page_icon="🤖", layout="wide")
-openai_api_key = "Add_Your_API_Key_Here"
+openai_api_key = st.secrets.API_KEY # ADD YOUR API KEY
 client = None
-client = openai.OpenAI(api_key=openai_api_key)
-assistant_id = "Add_Your_Assistant_ID_Here"
+client = openai.OpenAI(api_key=openai_api_key) # ADD YOUR ASSISTANT ID
+assistant_id = st.secrets.Assistant_Key
 instructions = os.environ.get("RUN_INSTRUCTIONS", "")
 assistant_title = os.environ.get("ASSISTANT_TITLE", "Dr.ai")
 
@@ -280,13 +280,12 @@ def main():
     if user_msg:
         render_chat()
         with st.chat_message("user"):
-            st.markdown("""<h2>Clone Repository and add you API_KEY, ASSISTANT_ID. Also uncomment the code lines in main<h2>""", True, )
-            #st.markdown(user_msg, True)
-        #st.session_state.chat_log.append({"name": "user", "msg": user_msg})
-        #with st.spinner("Wait for response..."):
-        #    response = get_response(user_msg)
-        #with st.chat_message("Assistant"):
-        #    st.markdown(response, True)
+            st.markdown(user_msg, True)
+        st.session_state.chat_log.append({"name": "user", "msg": user_msg})
+        with st.spinner("Wait for response..."):
+            response = get_response(user_msg)
+        with st.chat_message("Assistant"):
+            st.markdown(response, True)
 
         #st.session_state.chat_log.append({"name": "assistant", "msg": response})
         #st.session_state.in_progress = False
