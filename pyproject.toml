@@ -5,6 +5,8 @@ description = ""
 authors = ["Swayam Dani & Arjun M"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "*" }]
+
 
 [tool.poetry.dependencies]
 python = "^3.10 || ^3.11"
