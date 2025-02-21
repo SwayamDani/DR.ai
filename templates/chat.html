@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Dr.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body>
+    <div id="sidebar">
+        <h4>Dr.ai</h4>
+        <h4>What health concern can I help you with?</h4>
+        <button onclick="startNewChat()">Start New Chat</button>
+    </div>
+    <div class="chat-container">
+        <div id="chatbox">
+            <div id="messages-container">
+                <div id="messages">
+                    <!-- Messages will be appended here -->
+                </div>
+                <div id="loading" class="loading-container hidden">
+                    <div class="loading-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="prompt-row">
+                <button class="prompt-button" onclick="sendPrompt('How do I lose weight?')">How do I lose weight?</button>
+                <button class="prompt-button" onclick="sendPrompt('I have a severe headache')">I have a severe headache</button>
+                <button class="prompt-button" onclick="sendPrompt('I cant sleep')">I can't sleep</button>
+            </div>
+        </div>
+        <div id="user_input_container">
+            <input type="text" id="user_input" placeholder="Message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function startNewChat() {
+            // Clear chatbox
+            document.getElementById('messages').innerHTML = '';
+            document.getElementById('user_input').value = '';
+            
+            // Reset prompt buttons to initial state
+            const promptRow = document.querySelector('.prompt-row');
+            promptRow.innerHTML = `
+                <button class="prompt-button" onclick="sendPrompt('How do I lose weight?')">How do I lose weight?</button>
+                <button class="prompt-button" onclick="sendPrompt('I have a severe headache')">I have a severe headache</button>
+                <button class="prompt-button" onclick="sendPrompt('I cant sleep')">I can't sleep</button>
+            `;
+        
+            // Create new thread
+            fetch('/new_chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    throw new Error('Failed to create new chat');
+                }
+            })
+            .catch(error => {
+                document.getElementById('messages').innerHTML += `
+                    <div class="message assistant error"><strong>Error:</strong> Failed to start new chat</div>
+                `;
+            });
+        }
+
+        function updatePromptButtons(relatedPrompts) {
+            const promptRow = document.querySelector('.prompt-row');
+            promptRow.innerHTML = relatedPrompts.map(prompt => 
+                `<button class="prompt-button" onclick="sendPrompt('${prompt}')">${prompt}</button>`
+            ).join('');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function sendPrompt(message) {
+            document.getElementById('messages').innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
+            showLoading();
+
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    message,
+                    requestPrompts: true 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                document.getElementById('messages').innerHTML += `<div class="message assistant"><strong>Assistant:</strong> ${data.response}</div>`;
+                if (data.relatedPrompts) {
+                    updatePromptButtons(data.relatedPrompts);
+                }
+                document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+            });
+        }
+
+        function setUserMessage(message) {
+            document.getElementById('user_input').value = message; // Set the input field to the selected prompt
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('user_input').value;
+            if (message.trim() === "") return;  // Prevent sending empty messages
+
+            // Append user message to chatbox
+            document.getElementById('messages').innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
+            showLoading();
+
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    message,
+                    requestPrompts: true 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                // Append assistant's response to chatbox
+                document.getElementById('messages').innerHTML += `<div class="message assistant"><strong>Assistant:</strong> ${data.response}</div>`;
+                if (data.relatedPrompts) {
+                    updatePromptButtons(data.relatedPrompts);
+                }
+                document.getElementById('user_input').value = '';  // Clear input field
+                document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight; // Scroll to bottom
+            })
+            .catch(error => {
+                hideLoading();
+                document.getElementById('messages').innerHTML += `<div class="message assistant error"><strong>Error:</strong> Failed to send message</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
