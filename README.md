@@ -2,8 +2,6 @@
 
 Dr.ai is an interactive web application that leverages OpenAI's GPT-4o model to provide health-related information and guidance to users through a modern, intuitive chat interface.
 
-![Dr.ai Interface](https://via.placeholder.com/800x450)
-
 ## Features
 
 - **Interactive Chat Interface**: Clean, modern UI with real-time responses
