@@ -1,6 +1,6 @@
 /**
  * Dr.ai - AI Health Assistant
- * Main JavaScript file for handling chat functionality (Tailwind CSS version)
+ * Main JavaScript file for handling chat functionality with Tailwind CSS
  */
 
 // Create a namespace for the application
@@ -214,8 +214,27 @@ const draiApp = (function() {
         .then(data => {
             hideLoading();
             
-            // Append assistant's response to chatbox
-            messages.innerHTML += `<div class="message assistant rounded-2xl p-5 bg-message-bg text-white mr-auto rounded-bl-sm border border-white/10 animate-fade-in max-w-[85%] break-words"><strong>Dr.ai:</strong> ${data.response}</div>`;
+            // Create a container for the assistant's message
+            const assistantMessage = document.createElement('div');
+            assistantMessage.className = 'message assistant rounded-2xl p-5 bg-message-bg text-white mr-auto rounded-bl-sm border border-white/10 animate-fade-in max-w-[85%] break-words';
+            
+            // Add the prefix
+            const prefix = document.createElement('strong');
+            prefix.textContent = 'Dr.ai: ';
+            assistantMessage.appendChild(prefix);
+            
+            // Create a container for the response content
+            const responseContent = document.createElement('div');
+            responseContent.className = 'response-content inline';
+            
+            // Set the HTML content of the response
+            responseContent.innerHTML = data.response;
+            
+            // Append the response content to the message
+            assistantMessage.appendChild(responseContent);
+            
+            // Append the completed message to the messages container
+            messages.appendChild(assistantMessage);
             
             // Update prompt suggestions
             if (data.relatedPrompts && data.relatedPrompts.length > 0) {
@@ -264,8 +283,27 @@ const draiApp = (function() {
         .then(data => {
             hideLoading();
             
-            // Append assistant's response to chatbox
-            messages.innerHTML += `<div class="message assistant rounded-2xl p-5 bg-message-bg text-white mr-auto rounded-bl-sm border border-white/10 animate-fade-in max-w-[85%] break-words"><strong>Dr.ai:</strong> ${data.response}</div>`;
+            // Create a container for the assistant's message
+            const assistantMessage = document.createElement('div');
+            assistantMessage.className = 'message assistant rounded-2xl p-5 bg-message-bg text-white mr-auto rounded-bl-sm border border-white/10 animate-fade-in max-w-[85%] break-words';
+            
+            // Add the prefix
+            const prefix = document.createElement('strong');
+            prefix.textContent = 'Dr.ai: ';
+            assistantMessage.appendChild(prefix);
+            
+            // Create a container for the response content
+            const responseContent = document.createElement('div');
+            responseContent.className = 'response-content inline';
+            
+            // Set the HTML content of the response
+            responseContent.innerHTML = data.response;
+            
+            // Append the response content to the message
+            assistantMessage.appendChild(responseContent);
+            
+            // Append the completed message to the messages container
+            messages.appendChild(assistantMessage);
             
             // Update prompt suggestions
             if (data.relatedPrompts && data.relatedPrompts.length > 0) {

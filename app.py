@@ -1,5 +1,7 @@
 import os
 import time
+import re
+import markdown
 from openai import OpenAI
 from typing_extensions import override
 from openai import AssistantEventHandler
@@ -100,6 +102,70 @@ def cleanup_old_threads():
         except Exception as e:
             print(f"Error removing thread {thread_id}: {str(e)}")
 
+def add_tailwind_classes(html):
+    """Add Tailwind CSS classes to HTML elements to ensure proper styling"""
+    
+    # Add classes to headings
+    html = re.sub(r'<h1>(.*?)</h1>', r'<h1 class="text-2xl font-bold mt-4 mb-2">\1</h1>', html)
+    html = re.sub(r'<h2>(.*?)</h2>', r'<h2 class="text-xl font-bold mt-4 mb-2">\1</h2>', html)
+    html = re.sub(r'<h3>(.*?)</h3>', r'<h3 class="text-lg font-bold mt-3 mb-2">\1</h3>', html)
+    html = re.sub(r'<h4>(.*?)</h4>', r'<h4 class="text-base font-bold mt-3 mb-1">\1</h4>', html)
+    
+    # Add classes to paragraphs
+    html = re.sub(r'<p>(.*?)</p>', r'<p class="mb-3">\1</p>', html)
+    
+    # Add classes to unordered lists
+    html = re.sub(r'<ul>(.*?)</ul>', r'<ul class="list-disc ml-5 my-2 space-y-1">\1</ul>', html, flags=re.DOTALL)
+    
+    # Add classes to ordered lists
+    html = re.sub(r'<ol>(.*?)</ol>', r'<ol class="list-decimal ml-5 my-2 space-y-1">\1</ol>', html, flags=re.DOTALL)
+    
+    # Add classes to list items
+    html = re.sub(r'<li>(.*?)</li>', r'<li class="mb-1">\1</li>', html)
+    
+    # Add classes to blockquotes
+    html = re.sub(r'<blockquote>(.*?)</blockquote>', 
+                r'<blockquote class="border-l-4 border-indigo-500/50 pl-4 my-2 italic text-white/90">\1</blockquote>', 
+                html, flags=re.DOTALL)
+    
+    # Add classes to links
+    html = re.sub(r'<a href="(.*?)">(.*?)</a>', 
+                r'<a href="\1" class="text-blue-400 underline hover:text-blue-300">\2</a>', 
+                html)
+    
+    # Add classes to code blocks
+    html = re.sub(r'<pre><code>(.*?)</code></pre>', 
+                r'<pre class="bg-black/20 p-3 rounded-md overflow-x-auto my-3"><code class="font-mono text-sm">\1</code></pre>', 
+                html, flags=re.DOTALL)
+    
+    # Add classes to inline code
+    html = re.sub(r'<code>(.*?)</code>', 
+                r'<code class="bg-black/20 px-1 py-0.5 rounded text-sm font-mono">\1</code>', 
+                html)
+    
+    return html
+
+def process_markdown(text):
+    """Convert markdown to HTML and add Tailwind classes for styling"""
+    # First convert markdown to HTML
+    html = markdown.markdown(text)
+    
+    # Add Tailwind classes to HTML elements
+    html = add_tailwind_classes(html)
+    
+    # Replace ** with <strong> tags for any that weren't caught
+    html = re.sub(r'\*\*(.*?)\*\*', r'<strong class="font-semibold">\1</strong>', html)
+    
+    # Replace * with <em> tags for any that weren't caught
+    html = re.sub(r'\*(.*?)\*', r'<em class="italic">\1</em>', html)
+    
+    # Handle disclaimers with special styling
+    html = re.sub(r'IMPORTANT DISCLAIMER:?(.*?)(?=<\/p>|$)', 
+                r'<div class="mt-4 text-sm p-2 px-3 bg-white/5 rounded-lg text-white/70"><strong>Important Disclaimer:</strong>\1</div>', 
+                html, flags=re.DOTALL|re.IGNORECASE)
+    
+    return html
+
 @app.route('/send_message', methods=['POST'])
 def send_message():
     try:
@@ -138,7 +204,10 @@ def send_message():
 
             if run.status == 'completed':
                 messages = client.beta.threads.messages.list(thread_id=thread_id)
-                response = messages.data[0].content[0].text.value
+                response_text = messages.data[0].content[0].text.value
+                
+                # Process markdown to HTML with Tailwind classes
+                processed_response = process_markdown(response_text)
 
                 # If prompts are requested, get related prompts
                 related_prompts = []
@@ -176,7 +245,7 @@ def send_message():
                         related_prompts = []
                 
                 return jsonify({
-                    "response": response,
+                    "response": processed_response,
                     "relatedPrompts": related_prompts
                 }), 200
             else:
