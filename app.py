@@ -7,7 +7,9 @@ from flask import Flask, render_template, request, jsonify
 
 load_dotenv()
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+openai_api_key=os.environ.get("OPENAI_API_KEY")
+
+client = OpenAI(api_key=openai_api_key)
 
 app = Flask(__name__)
 
