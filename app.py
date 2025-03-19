@@ -260,3 +260,6 @@ def send_message():
         print(f"Error sending message: {str(e)}")
         traceback.print_exc()
         return jsonify({"response": "An error occurred while processing your message. Please try again later.", "relatedPrompts": []}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
