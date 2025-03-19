@@ -4,154 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Dr.ai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/chat.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Include Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sidebar-bg': '#111827',
+                        'main-bg': '#0a0a0a',
+                        'chatbox-bg': 'rgba(20, 20, 20, 0.7)',
+                        'blue-gradient-start': '#4f46e5',
+                        'blue-gradient-end': '#3b82f6',
+                        'message-bg': 'rgba(255, 255, 255, 0.05)',
+                        'welcome-bg': 'rgba(79, 70, 229, 0.1)',
+                        'welcome-border': 'rgba(79, 70, 229, 0.2)',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease',
+                        'pulse-dot': 'pulse 1.4s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0', transform: 'translateY(10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        pulse: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0.5' },
+                            '50%': { transform: 'scale(1.2)', opacity: '0.8' },
+                            '100%': { transform: 'scale(0.8)', opacity: '0.5' }
+                        }
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Minimal CSS for features not easily done with Tailwind */
+        .bg-gradient {
+            background: linear-gradient(45deg, #4f46e5, #3b82f6);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #60a5fa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .bg-body-gradient {
+            background: linear-gradient(to bottom, #0a0a0a, #141414);
+        }
+        
+        @media (max-width: 768px) {
+            #sidebar {
+                transition: left 0.3s ease;
+            }
+            #sidebar.sidebar-open {
+                left: 0;
+            }
+            .overlay.active {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+    </style>
 </head>
-<body>
-    <div id="sidebar">
-        <h4>Dr.ai</h4>
-        <h4>What health concern can I help you with?</h4>
-        <button onclick="startNewChat()">Start New Chat</button>
+<body class="font-poppins bg-main-bg text-white m-0 flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div id="sidebar" class="min-w-[250px] max-w-[280px] p-7 bg-sidebar-bg border-r border-white/5 flex flex-col gap-6 shadow-lg overflow-y-auto z-10 md:static fixed -left-[280px] top-0 h-full">
+        <div class="flex items-center gap-2">
+            <h4 class="text-2xl font-bold text-gradient leading-none">Dr.ai</h4>
+            <div class="bg-blue-500/20 text-blue-500 text-xs font-semibold px-2 py-0.5 rounded mt-0.5">Beta</div>
+        </div>
+        <h5 class="-mt-3 text-sm font-normal text-white/60">Your AI Health Assistant</h5>
+        <div class="mt-3 flex flex-col gap-2.5 flex-grow">
+            <h6 class="text-xs text-white/50 uppercase tracking-wider mb-2">Recent Chats</h6>
+            <div id="chat-history" class="flex flex-col gap-2">
+                <!-- Chat history items will be added here -->
+            </div>
+        </div>
+        <button class="new-chat-btn bg-gradient flex items-center gap-2.5 py-3 px-4 mt-4 rounded-xl border-none text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5" onclick="draiApp.startNewChat()">
+            <span class="text-base font-bold">+</span>
+            <span>New Conversation</span>
+        </button>
     </div>
-    <div class="chat-container">
-        <div id="chatbox">
-            <div id="messages-container">
-                <div id="messages">
-                    <!-- Messages will be appended here -->
+    
+    <!-- Mobile overlay -->
+    <div id="overlay" class="overlay fixed inset-0 bg-black/50 z-[9] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    
+    <!-- Main chat area -->
+    <div class="chat-container flex-grow flex flex-col p-8 h-screen box-border gap-5 bg-body-gradient relative">
+        <!-- Mobile toggle button -->
+        <button id="toggle-sidebar" class="toggle-btn hidden md:hidden absolute top-4 left-4 z-[11] w-10 h-10 rounded-lg bg-black/80 border border-white/10 p-2 items-center justify-center cursor-pointer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12H21M3 6H21M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        
+        <!-- Chatbox -->
+        <div id="chatbox" class="flex-grow border border-white/10 rounded-2xl p-6 bg-chatbox-bg flex flex-col shadow-xl relative overflow-hidden">
+            <div id="messages-container" class="flex-grow overflow-y-auto mb-4 flex flex-col gap-4 scroll-smooth max-h-[calc(100vh-260px)]">
+                <div id="messages" class="flex flex-col gap-5">
+                    <!-- Welcome message that appears by default -->
+                    <div class="message assistant welcome max-w-[90%] rounded-2xl p-5 bg-welcome-bg border border-welcome-border mb-4 animate-fade-in">
+                        <strong>Dr.ai:</strong> 
+                        <p>Hello! I'm Dr.ai, your AI health assistant. I can help answer questions about:</p>
+                        <ul class="my-3 pl-6">
+                            <li class="mb-1.5">General health information</li>
+                            <li class="mb-1.5">Exercise and nutrition guidance</li>
+                            <li class="mb-1.5">Common symptoms and conditions</li>
+                            <li class="mb-1.5">Preventive health measures</li>
+                        </ul>
+                        <p>How can I assist you today?</p>
+                        <div class="mt-4 text-sm p-2 px-3 bg-white/5 rounded-lg text-white/70">Note: I provide general information only. For medical emergencies or specific diagnoses, please consult a healthcare professional.</div>
+                    </div>
                 </div>
-                <div id="loading" class="loading-container hidden">
-                    <div class="loading-dots">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
+                <div id="loading" class="loading-container hidden flex p-5 justify-start mr-auto">
+                    <div class="flex gap-2 py-3 px-5 bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm">
+                        <div class="dot w-2 h-2 rounded-full bg-white opacity-60 animate-pulse-dot"></div>
+                        <div class="dot w-2 h-2 rounded-full bg-white opacity-60 animate-pulse-dot delay-[0.2s]"></div>
+                        <div class="dot w-2 h-2 rounded-full bg-white opacity-60 animate-pulse-dot delay-[0.4s]"></div>
                     </div>
                 </div>
             </div>
-            <div class="prompt-row">
-                <button class="prompt-button" onclick="sendPrompt('How do I lose weight?')">How do I lose weight?</button>
-                <button class="prompt-button" onclick="sendPrompt('I have a severe headache')">I have a severe headache</button>
-                <button class="prompt-button" onclick="sendPrompt('I cant sleep')">I can't sleep</button>
+            <div class="mt-auto">
+                <h6 class="text-xs text-white/50 uppercase tracking-wider mb-2">Suggested Topics</h6>
+                <div class="prompt-row flex gap-3 w-full flex-wrap md:flex-nowrap">
+                    <button class="prompt-button py-3 px-4 bg-white/5 text-white border border-white/10 rounded-lg font-medium text-sm transition-all duration-200 text-left whitespace-nowrap overflow-hidden text-ellipsis backdrop-blur-sm hover:bg-white/10 hover:-translate-y-0.5 hover:shadow-md" data-prompt="How do I lose weight healthily?">Weight loss tips</button>
+                    <button class="prompt-button py-3 px-4 bg-white/5 text-white border border-white/10 rounded-lg font-medium text-sm transition-all duration-200 text-left whitespace-nowrap overflow-hidden text-ellipsis backdrop-blur-sm hover:bg-white/10 hover:-translate-y-0.5 hover:shadow-md" data-prompt="What causes migraines?">Migraine causes</button>
+                    <button class="prompt-button py-3 px-4 bg-white/5 text-white border border-white/10 rounded-lg font-medium text-sm transition-all duration-200 text-left whitespace-nowrap overflow-hidden text-ellipsis backdrop-blur-sm hover:bg-white/10 hover:-translate-y-0.5 hover:shadow-md" data-prompt="Tips for better sleep">Sleep improvement</button>
+                </div>
             </div>
         </div>
-        <div id="user_input_container">
-            <input type="text" id="user_input" placeholder="Message">
-            <button onclick="sendMessage()">Send</button>
+        <div id="user_input_container" class="flex gap-3 w-full p-2 bg-black/90 border border-white/10 rounded-2xl shadow-lg">
+            <input type="text" id="user_input" class="flex-grow py-4 px-5 border border-white/10 rounded-xl bg-white/5 text-white text-base transition-all duration-300 focus:outline-none focus:border-indigo-500/50 focus:shadow-[0_0_0_3px_rgba(79,70,229,0.25)]" placeholder="Ask me about your health concerns...">
+            <button id="send-button" class="w-12 h-12 flex items-center justify-center p-0 border-none rounded-xl bg-gradient cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <script>
-        function startNewChat() {
-            // Clear chatbox
-            document.getElementById('messages').innerHTML = '';
-            document.getElementById('user_input').value = '';
-            
-            // Reset prompt buttons to initial state
-            const promptRow = document.querySelector('.prompt-row');
-            promptRow.innerHTML = `
-                <button class="prompt-button" onclick="sendPrompt('How do I lose weight?')">How do I lose weight?</button>
-                <button class="prompt-button" onclick="sendPrompt('I have a severe headache')">I have a severe headache</button>
-                <button class="prompt-button" onclick="sendPrompt('I cant sleep')">I can't sleep</button>
-            `;
-        
-            // Create new thread
-            fetch('/new_chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status !== 'success') {
-                    throw new Error('Failed to create new chat');
-                }
-            })
-            .catch(error => {
-                document.getElementById('messages').innerHTML += `
-                    <div class="message assistant error"><strong>Error:</strong> Failed to start new chat</div>
-                `;
-            });
-        }
-
-        function updatePromptButtons(relatedPrompts) {
-            const promptRow = document.querySelector('.prompt-row');
-            promptRow.innerHTML = relatedPrompts.map(prompt => 
-                `<button class="prompt-button" onclick="sendPrompt('${prompt}')">${prompt}</button>`
-            ).join('');
-        }
-
-        function showLoading() {
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
-        }
-
-        function hideLoading() {
-            document.getElementById('loading').classList.add('hidden');
-        }
-
-        function sendPrompt(message) {
-            document.getElementById('messages').innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
-            showLoading();
-
-            fetch('/send_message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    message,
-                    requestPrompts: true 
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
-                document.getElementById('messages').innerHTML += `<div class="message assistant"><strong>Assistant:</strong> ${data.response}</div>`;
-                if (data.relatedPrompts) {
-                    updatePromptButtons(data.relatedPrompts);
-                }
-                document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
-            });
-        }
-
-        function setUserMessage(message) {
-            document.getElementById('user_input').value = message; // Set the input field to the selected prompt
-        }
-
-        function sendMessage() {
-            const message = document.getElementById('user_input').value;
-            if (message.trim() === "") return;  // Prevent sending empty messages
-
-            // Append user message to chatbox
-            document.getElementById('messages').innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
-            showLoading();
-
-            fetch('/send_message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    message,
-                    requestPrompts: true 
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
-                // Append assistant's response to chatbox
-                document.getElementById('messages').innerHTML += `<div class="message assistant"><strong>Assistant:</strong> ${data.response}</div>`;
-                if (data.relatedPrompts) {
-                    updatePromptButtons(data.relatedPrompts);
-                }
-                document.getElementById('user_input').value = '';  // Clear input field
-                document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight; // Scroll to bottom
-            })
-            .catch(error => {
-                hideLoading();
-                document.getElementById('messages').innerHTML += `<div class="message assistant error"><strong>Error:</strong> Failed to send message</div>`;
-            });
-        }
-    </script>
+    <!-- JavaScript files -->
+    <script src="/static/chat.js"></script>
+    <script src="/static/health-features.js"></script>
 </body>
 </html>
